@@ -37,8 +37,8 @@ body:
     attributes:
       label: AI-based
       options:
-        - Yes
-        - No
+        - "Yes"
+        - "No"
     validations:
       required: true
 
