@@ -36,6 +36,15 @@ form = {
             "validations": {"required": True},
         },
         {
+            "type": "input",
+            "id": "domain_other_specify",
+            "attributes": {
+                "label": "If Domain is 'Other (please specify below)'",
+                "description": "Leave blank if not applicable",
+            },
+            "validations": {"required": False},
+        },
+        {
             "type": "dropdown",
             "id": "trl",
             "attributes": {"label": "TRL", "options": ["1-3", "4-6", "7-9", "NA"]},
@@ -76,6 +85,15 @@ form = {
             "validations": {"required": True},
         },
         {
+            "type": "input",
+            "id": "attack_scenarios_other_specify",
+            "attributes": {
+                "label": "If Attack Scenarios is 'Other (please specify below)'",
+                "description": "Leave blank if not applicable",
+            },
+            "validations": {"required": False},
+        },
+        {
             "type": "dropdown",
             "id": "evaluation_method",
             "attributes": {
@@ -84,15 +102,6 @@ form = {
                 "options": ["Empirical", "Analytical", "Simulation", "NA"],
             },
             "validations": {"required": True},
-        },
-        {
-            "type": "input",
-            "id": "other_specify",
-            "attributes": {
-                "label": "If you selected 'Other (please specify below)' in Domain or Attack Scenarios, describe here",
-                "description": "Leave blank if not applicable",
-            },
-            "validations": {"required": False},
         },
     ],
 }
