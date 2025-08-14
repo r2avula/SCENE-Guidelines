@@ -68,7 +68,7 @@ body:
         - I (Information Disclosure)
         - D (Denial of Service)
         - E (Elevation of Privilege)
-        - "None"
+        - "NA"
     validations:
       required: true
 
@@ -84,7 +84,7 @@ body:
         - T4
         - T5
         - T6
-        - "None"
+        - "NA"
     validations:
       required: true
 
@@ -97,6 +97,6 @@ body:
         - Empirical
         - Analytical
         - Simulation
-        - "None"
+        - "NA"
     validations:
       required: true
