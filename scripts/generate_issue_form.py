@@ -6,9 +6,9 @@ import yaml
 domains = json.loads(Path("./config/domains.json").read_text())
 attack_scenarios = json.loads(Path("./config/attack_scenarios.json").read_text())
 
-# Append an 'Other' and 'NA' option
+# Append 'Other' and 'NA' options
 domains.extend(["Other (please specify below)", "NA"])
-attack_scenarios.append("NA")
+attack_scenarios.extend(["Other (please specify below)", "NA"])
 
 # Define YAML template
 form = {
@@ -88,7 +88,10 @@ form = {
         {
             "type": "input",
             "id": "other_specify",
-            "attributes": {"label": "If 'Other', please specify here"},
+            "attributes": {
+                "label": "If you selected 'Other (please specify below)' in Domain or Attack Scenarios, describe here",
+                "description": "Leave blank if not applicable",
+            },
             "validations": {"required": False},
         },
     ],
