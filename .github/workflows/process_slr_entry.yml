@@ -22,6 +22,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Needed to switch branches
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -55,17 +57,29 @@ jobs:
 
       - name: Commit changes to new branch
         run: |
+          # Get default branch dynamically
+          DEFAULT_BRANCH=$(gh repo view --json defaultBranchRef --jq '.defaultBranchRef.name')
+
           BRANCH="slr-entry-${ISSUE_NUM}"
+
+          # Always start from the default branch to avoid base/source conflict
+          git fetch origin $DEFAULT_BRANCH
+          git checkout $DEFAULT_BRANCH
+
           git config --global user.name "github-actions[bot]"
           git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
           git checkout -b "$BRANCH"
           git add slr.csv README.md
           git commit -m "Add SLR entry from issue #${ISSUE_NUM}" || echo "No changes to commit"
           git push origin "$BRANCH"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Open Pull Request
         uses: peter-evans/create-pull-request@v5
         with:
+          base: ${{ github.event.repository.default_branch }}
           branch: "slr-entry-${{ env.ISSUE_NUM }}"
           title: "Add SLR entry from issue #${{ env.ISSUE_NUM }}"
           body: "This PR adds the new SLR entry submitted via issue #${{ env.ISSUE_NUM }}."
