@@ -4,10 +4,10 @@ title: "[SLR Entry] "
 labels: ["slr-entry"]
 body:
   - type: input
-    id: study
+    id: doi
     attributes:
-      label: Study ID
-      description: e.g. `torkura_cloudstrike_2020`
+      label: DOI
+      placeholder: "10.5281/zenodo.XXXXXXX"
     validations:
       required: true
 
