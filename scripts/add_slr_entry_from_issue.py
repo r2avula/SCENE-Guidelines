@@ -16,17 +16,17 @@ print(body)
 print("----------------------\n")
 
 def extract_single(field_label):
-    """Extract a single-line field value from GitHub issue form text."""
-    # Match with optional leading ### and strip Markdown emphasis/underscores
-    pattern = rf"(?:###\s*)?{re.escape(field_label)}\n\n([^\n]+)"
+    pattern = rf"(?:^|\n)###\s+{re.escape(field_label)}\s*\n\n([^\n]+)"
     match = re.search(pattern, body)
     if match:
-        return match.group(1).strip().strip("_")
+        value = match.group(1).strip().strip("_")
+        if value.lower() == "no response":
+            return ""
+        return value
     return ""
 
 def extract_multi(field_label):
-    """Extract multi-select dropdown values from GitHub issue form text."""
-    pattern = rf"(?:###\s*)?{re.escape(field_label)}\n\n((?:- .*\n?)+)"
+    pattern = rf"(?:^|\n)###\s+{re.escape(field_label)}\s*\n\n((?:- .*\n?)+)"
     match = re.search(pattern, body)
     if match:
         items = [line.strip("- ").strip() for line in match.group(1).splitlines() if line.strip()]
