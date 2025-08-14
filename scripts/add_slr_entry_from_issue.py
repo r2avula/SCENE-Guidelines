@@ -1,21 +1,23 @@
 import pandas as pd
 import re
 import json
+import os
 from pathlib import Path
 from tabulate import tabulate
 
-# Load the issue body
-with open("issue_body.txt", "r", encoding="utf-8") as f:
-    body = f.read()
+# Load the issue body from environment variable
+body = os.environ.get("ISSUE_BODY", "")
+if not body:
+    raise ValueError("Environment variable ISSUE_BODY is not set or empty.")
 
 def extract_single(field_label):
     """Extract a single-line field value from GitHub issue form text."""
-    match = re.search(rf"{field_label}\n\n([^\n]+)", body)
+    match = re.search(rf"{re.escape(field_label)}\n\n([^\n]+)", body)
     return match.group(1).strip() if match else ""
 
 def extract_multi(field_label):
     """Extract multi-select dropdown values from GitHub issue form text."""
-    match = re.search(rf"{field_label}\n\n((?:- .*\n?)+)", body)
+    match = re.search(rf"{re.escape(field_label)}\n\n((?:- .*\n?)+)", body)
     if match:
         items = [line.strip("- ").strip() for line in match.group(1).splitlines() if line.strip()]
         return ", ".join(items)
@@ -39,7 +41,7 @@ if domain_other:
     if domain_other not in domains:
         domains.insert(-2, domain_other)  # insert before "Other" and "NA"
         domains_path.write_text(json.dumps(domains, indent=2))
-    domain_selected = domain_other  # replace 'Other' with actual
+    domain_selected = domain_other
 
 if attack_other:
     if attack_other not in attack_scenarios:
