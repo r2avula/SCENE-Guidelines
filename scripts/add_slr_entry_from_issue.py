@@ -5,10 +5,11 @@ import os
 from pathlib import Path
 from tabulate import tabulate
 
-# Load the issue body from environment variable
+# Load the issue body from environment variable (preferred) or file
 body = os.environ.get("ISSUE_BODY", "")
 if not body:
-    raise ValueError("Environment variable ISSUE_BODY is not set or empty.")
+    with open("issue_body.txt", "r", encoding="utf-8") as f:
+        body = f.read()
 
 def extract_single(field_label):
     """Extract a single-line field value from GitHub issue form text."""
@@ -41,7 +42,7 @@ if domain_other:
     if domain_other not in domains:
         domains.insert(-2, domain_other)  # insert before "Other" and "NA"
         domains_path.write_text(json.dumps(domains, indent=2))
-    domain_selected = domain_other
+    domain_selected = domain_other  # replace 'Other' with actual
 
 if attack_other:
     if attack_other not in attack_scenarios:
@@ -59,6 +60,12 @@ entry = {
     "Attack Scenarios": attack_selected,
     "Evaluation Method": extract_multi("Evaluation Method"),
 }
+
+# --- Debug print ---
+print("\n--- Extracted Values ---")
+for k, v in entry.items():
+    print(f"{k}: {v}")
+print("------------------------\n")
 
 # --- Append to CSV ---
 df = pd.read_csv("slr.csv")
