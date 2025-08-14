@@ -7,7 +7,7 @@ body:
     id: doi
     attributes:
       label: DOI
-      description: do not include the `https://doi.org/` prefix
+      description: e.g. `10.5281/zenodo.15911877`
       placeholder: "10.5281/zenodo.XXXXXXX"
     validations:
       required: true
@@ -60,7 +60,6 @@ body:
     id: targeted_threats
     attributes:
       label: Targeted Threats
-      description: Select one or more threats (STRIDE)
       multiple: true
       options:
         - S (Spoofing)
@@ -69,7 +68,7 @@ body:
         - I (Information Disclosure)
         - D (Denial of Service)
         - E (Elevation of Privilege)
-        - None
+        - "None"
     validations:
       required: true
 
@@ -77,7 +76,6 @@ body:
     id: attack_scenarios
     attributes:
       label: Attack Scenarios
-      description: Select one or more
       multiple: true
       options:
         - T1
@@ -86,7 +84,7 @@ body:
         - T4
         - T5
         - T6
-        - None
+        - "None"
     validations:
       required: true
 
@@ -99,6 +97,6 @@ body:
         - Empirical
         - Analytical
         - Simulation
-        - None
+        - "None"
     validations:
       required: true
