@@ -26,8 +26,12 @@ form = {
         {
             "type": "input",
             "id": "year",
-            "attributes": {"label": "Year"},
-            "validations": {"required": True},
+            "attributes": {
+                "label": "Year",
+                "placeholder": "YYYY",
+                "description": "Enter the 4-digit publication year (e.g., 2023)"
+            },
+            "validations": {"required": True}
         },
         {
             "type": "dropdown",
@@ -39,7 +43,7 @@ form = {
             "type": "input",
             "id": "domain_other_specify",
             "attributes": {
-                "label": "If Domain is 'Other (please specify below)'",
+                "label": "If Domain is 'Other', please specify below",
                 "description": "Leave blank if not applicable",
             },
             "validations": {"required": False},
@@ -88,7 +92,7 @@ form = {
             "type": "input",
             "id": "attack_scenarios_other_specify",
             "attributes": {
-                "label": "If Attack Scenarios is 'Other (please specify below)'",
+                "label": "If Domain is 'Other', please specify below",
                 "description": "Leave blank if not applicable",
             },
             "validations": {"required": False},
@@ -99,7 +103,7 @@ form = {
             "attributes": {
                 "label": "Evaluation Method",
                 "multiple": True,
-                "options": ["Empirical", "Analytical", "Simulation", "NA"],
+                "options": ["Empirical", "Analytical", "NA"],
             },
             "validations": {"required": True},
         },
