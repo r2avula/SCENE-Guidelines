@@ -4,10 +4,16 @@ on:
   issues:
     types: [opened, edited, reopened]
   workflow_dispatch:
+    inputs:
+      issue_number:
+        description: 'Issue number to process (optional for manual run)'
+        required: false
+        type: number
 
 permissions:
   contents: write
   pull-requests: write
+  issues: read
 
 jobs:
   process-entry:
@@ -23,28 +29,45 @@ jobs:
       - name: Install dependencies
         run: pip install pandas tabulate
 
-      - name: Save issue body to file
+      - name: Determine issue number and fetch body
+        id: get-issue
         run: |
-          echo "${{ github.event.issue.body }}" > issue_body.txt
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            if [ -n "${{ inputs.issue_number }}" ]; then
+              ISSUE_NUM="${{ inputs.issue_number }}"
+            else
+              echo "No issue number provided, fetching latest open issue..."
+              ISSUE_NUM=$(gh api repos/${{ github.repository }}/issues \
+                --jq 'map(select(.state=="open")) | sort_by(.created_at) | reverse | .[0].number')
+            fi
+            echo "Fetching body for issue #$ISSUE_NUM"
+            gh api repos/${{ github.repository }}/issues/$ISSUE_NUM --jq '.body' > issue_body.txt
+          else
+            ISSUE_NUM="${{ github.event.issue.number }}"
+            echo "${{ github.event.issue.body }}" > issue_body.txt
+          fi
+          echo "ISSUE_NUM=$ISSUE_NUM" >> $GITHUB_ENV
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Run script to update CSV & README
         run: python scripts/add_slr_entry_from_issue.py
 
       - name: Commit changes to new branch
         run: |
-          BRANCH="slr-entry-${{ github.event.issue.number }}"
+          BRANCH="slr-entry-${ISSUE_NUM}"
           git config --global user.name "github-actions[bot]"
-          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git checkout -b "$BRANCH"
           git add slr.csv README.md
-          git commit -m "Add SLR entry from issue #${{ github.event.issue.number }}"
+          git commit -m "Add SLR entry from issue #${ISSUE_NUM}" || echo "No changes to commit"
           git push origin "$BRANCH"
 
       - name: Open Pull Request
         uses: peter-evans/create-pull-request@v5
         with:
-          branch: "slr-entry-${{ github.event.issue.number }}"
-          title: "Add SLR entry from issue #${{ github.event.issue.number }}"
-          body: "This PR adds the new SLR entry submitted via issue #${{ github.event.issue.number }}."
+          branch: "slr-entry-${{ env.ISSUE_NUM }}"
+          title: "Add SLR entry from issue #${{ env.ISSUE_NUM }}"
+          body: "This PR adds the new SLR entry submitted via issue #${{ env.ISSUE_NUM }}."
           labels: slr-entry
           draft: false
