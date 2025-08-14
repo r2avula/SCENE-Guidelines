@@ -1,1 +1,39 @@
-This PR adds the new SLR entry submitted via issue #1.
+### DOI
+
+test
+
+### Year
+
+2025
+
+### Domain
+
+Cloud
+
+### If Domain is 'Other', please specify below
+
+_No response_
+
+### TRL
+
+1-3
+
+### AI-based
+
+Yes
+
+### Targeted Threats
+
+S (Spoofing)
+
+### Attack Scenarios
+
+T1 (Disable functionality or system elements)
+
+### If Domain is 'Other', please specify below
+
+_No response_
+
+### Evaluation Method
+
+Empirical
