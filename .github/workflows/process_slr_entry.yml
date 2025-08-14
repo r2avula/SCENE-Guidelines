@@ -23,7 +23,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0  # Needed to switch branches
+          fetch-depth: 0
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -31,7 +31,7 @@ jobs:
       - name: Install dependencies
         run: pip install pandas tabulate
 
-      - name: Determine issue number and fetch body
+      - name: Determine issue number and body
         id: get-issue
         run: |
           if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
@@ -42,27 +42,28 @@ jobs:
               ISSUE_NUM=$(gh api repos/${{ github.repository }}/issues \
                 --jq 'map(select(.state=="open")) | sort_by(.created_at) | reverse | .[0].number')
             fi
-            echo "Fetching body for issue #$ISSUE_NUM"
-            gh api repos/${{ github.repository }}/issues/$ISSUE_NUM --jq '.body' > issue_body.txt
+            ISSUE_BODY=$(gh api repos/${{ github.repository }}/issues/$ISSUE_NUM --jq '.body')
           else
             ISSUE_NUM="${{ github.event.issue.number }}"
-            echo "${{ github.event.issue.body }}" > issue_body.txt
+            ISSUE_BODY="${{ github.event.issue.body }}"
           fi
           echo "ISSUE_NUM=$ISSUE_NUM" >> $GITHUB_ENV
+          echo "ISSUE_BODY<<EOF" >> $GITHUB_ENV
+          echo "$ISSUE_BODY" >> $GITHUB_ENV
+          echo "EOF" >> $GITHUB_ENV
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Run script to update CSV & README
         run: python scripts/add_slr_entry_from_issue.py
+        env:
+          ISSUE_BODY: ${{ env.ISSUE_BODY }}
 
       - name: Commit changes to new branch
         run: |
-          # Get default branch dynamically
           DEFAULT_BRANCH=$(gh repo view --json defaultBranchRef --jq '.defaultBranchRef.name')
-
           BRANCH="slr-entry-${ISSUE_NUM}"
 
-          # Always start from the default branch to avoid base/source conflict
           git fetch origin $DEFAULT_BRANCH
           git checkout $DEFAULT_BRANCH
 
@@ -73,7 +74,6 @@ jobs:
           git add slr.csv README.md
           git commit -m "Add SLR entry from issue #${ISSUE_NUM}" || echo "No changes to commit"
 
-          # Delete remote branch if it exists, then push fresh
           git push origin --delete "$BRANCH" || true
           git push origin "$BRANCH"
         env:
@@ -85,6 +85,10 @@ jobs:
           base: ${{ github.event.repository.default_branch }}
           branch: "slr-entry-${{ env.ISSUE_NUM }}"
           title: "Add SLR entry from issue #${{ env.ISSUE_NUM }}"
-          body: "This PR adds the new SLR entry submitted via issue #${{ env.ISSUE_NUM }}."
+          body: |
+            Closes #${{ env.ISSUE_NUM }}
+
+            **Issue content:**
+            ${{ env.ISSUE_BODY }}
           labels: slr-entry
           draft: false
