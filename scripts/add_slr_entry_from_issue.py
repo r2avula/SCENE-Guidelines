@@ -11,14 +11,23 @@ if not body:
     with open("issue_body.txt", "r", encoding="utf-8") as f:
         body = f.read()
 
+print("\n--- RAW ISSUE BODY ---")
+print(body)
+print("----------------------\n")
+
 def extract_single(field_label):
     """Extract a single-line field value from GitHub issue form text."""
-    match = re.search(rf"{re.escape(field_label)}\n\n([^\n]+)", body)
-    return match.group(1).strip() if match else ""
+    # Match with optional leading ### and strip Markdown emphasis/underscores
+    pattern = rf"(?:###\s*)?{re.escape(field_label)}\n\n([^\n]+)"
+    match = re.search(pattern, body)
+    if match:
+        return match.group(1).strip().strip("_")
+    return ""
 
 def extract_multi(field_label):
     """Extract multi-select dropdown values from GitHub issue form text."""
-    match = re.search(rf"{re.escape(field_label)}\n\n((?:- .*\n?)+)", body)
+    pattern = rf"(?:###\s*)?{re.escape(field_label)}\n\n((?:- .*\n?)+)"
+    match = re.search(pattern, body)
     if match:
         items = [line.strip("- ").strip() for line in match.group(1).splitlines() if line.strip()]
         return ", ".join(items)
@@ -40,9 +49,9 @@ attack_other = extract_single("If Attack Scenarios is 'Other', please specify be
 # --- Update JSON lists if 'Other' is specified ---
 if domain_other:
     if domain_other not in domains:
-        domains.insert(-2, domain_other)  # insert before "Other" and "NA"
+        domains.insert(-2, domain_other)
         domains_path.write_text(json.dumps(domains, indent=2))
-    domain_selected = domain_other  # replace 'Other' with actual
+    domain_selected = domain_other
 
 if attack_other:
     if attack_other not in attack_scenarios:
@@ -62,7 +71,7 @@ entry = {
 }
 
 # --- Debug print ---
-print("\n--- Extracted Values ---")
+print("\n--- EXTRACTED VALUES ---")
 for k, v in entry.items():
     print(f"{k}: {v}")
 print("------------------------\n")
