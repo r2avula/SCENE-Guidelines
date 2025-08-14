@@ -80,6 +80,7 @@ body:
     - T4 (Various Denial of Service (DoS) injections)
     - T5 (Data and resource injections)
     - T6 (Environment-related)
+    - Other (please specify below)
     - NA
   validations:
     required: true
@@ -98,6 +99,8 @@ body:
 - type: input
   id: other_specify
   attributes:
-    label: If 'Other', please specify here
+    label: If you selected 'Other (please specify below)' in Domain or Attack Scenarios,
+      describe here
+    description: Leave blank if not applicable
   validations:
     required: false
