@@ -15,6 +15,8 @@ body:
   id: year
   attributes:
     label: Year
+    placeholder: YYYY
+    description: Enter the 4-digit publication year (e.g., 2023)
   validations:
     required: true
 - type: dropdown
@@ -36,7 +38,7 @@ body:
 - type: input
   id: domain_other_specify
   attributes:
-    label: If Domain is 'Other (please specify below)'
+    label: If Domain is 'Other', please specify below
     description: Leave blank if not applicable
   validations:
     required: false
@@ -94,7 +96,7 @@ body:
 - type: input
   id: attack_scenarios_other_specify
   attributes:
-    label: If Attack Scenarios is 'Other (please specify below)'
+    label: If Domain is 'Other', please specify below
     description: Leave blank if not applicable
   validations:
     required: false
@@ -106,7 +108,6 @@ body:
     options:
     - Empirical
     - Analytical
-    - Simulation
     - NA
   validations:
     required: true
