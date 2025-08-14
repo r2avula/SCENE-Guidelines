@@ -3,8 +3,8 @@ from pathlib import Path
 import yaml
 
 # Load JSON lists
-domains = json.loads(Path("../config/domains.json").read_text())
-attack_scenarios = json.loads(Path("../config/attack_scenarios.json").read_text())
+domains = json.loads(Path("./config/domains.json").read_text())
+attack_scenarios = json.loads(Path("./config/attack_scenarios.json").read_text())
 
 # Append an 'Other' and 'NA' option
 domains.extend(["Other (please specify below)", "NA"])
