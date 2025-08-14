@@ -33,6 +33,13 @@ body:
     - NA
   validations:
     required: true
+- type: input
+  id: domain_other_specify
+  attributes:
+    label: If Domain is 'Other (please specify below)'
+    description: Leave blank if not applicable
+  validations:
+    required: false
 - type: dropdown
   id: trl
   attributes:
@@ -84,6 +91,13 @@ body:
     - NA
   validations:
     required: true
+- type: input
+  id: attack_scenarios_other_specify
+  attributes:
+    label: If Attack Scenarios is 'Other (please specify below)'
+    description: Leave blank if not applicable
+  validations:
+    required: false
 - type: dropdown
   id: evaluation_method
   attributes:
@@ -96,11 +110,3 @@ body:
     - NA
   validations:
     required: true
-- type: input
-  id: other_specify
-  attributes:
-    label: If you selected 'Other (please specify below)' in Domain or Attack Scenarios,
-      describe here
-    description: Leave blank if not applicable
-  validations:
-    required: false
