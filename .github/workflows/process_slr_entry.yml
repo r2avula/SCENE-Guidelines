@@ -1,0 +1,51 @@
+name: Process SLR Entry (PR-based)
+
+on:
+  issues:
+    types: [opened, edited, reopened]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  process-entry:
+    if: contains(github.event.issue.labels.*.name, 'slr-entry')
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+
+      - name: Install dependencies
+        run: pip install pandas tabulate
+
+      - name: Save issue body to file
+        run: |
+          echo "${{ github.event.issue.body }}" > issue_body.txt
+
+      - name: Run script to update CSV & README
+        run: python scripts/add_slr_entry_from_issue.py
+
+      - name: Commit changes to new branch
+        run: |
+          BRANCH="slr-entry-${{ github.event.issue.number }}"
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git checkout -b "$BRANCH"
+          git add slr.csv README.md
+          git commit -m "Add SLR entry from issue #${{ github.event.issue.number }}"
+          git push origin "$BRANCH"
+
+      - name: Open Pull Request
+        uses: peter-evans/create-pull-request@v5
+        with:
+          branch: "slr-entry-${{ github.event.issue.number }}"
+          title: "Add SLR entry from issue #${{ github.event.issue.number }}"
+          body: "This PR adds the new SLR entry submitted via issue #${{ github.event.issue.number }}."
+          labels: slr-entry
+          draft: false
