@@ -38,10 +38,9 @@ fault_injection_other = extract_field(
     "If Fault Injection is 'Other', please specify below"
 )
 raw_threats = extract_field("Targeted Threats")
-targeted_threats_list = [
-    t.strip() for t in re.split(r"[,\n]", raw_threats) if t.strip()
-]
-targeted_threats_str = ",".join(targeted_threats_list)
+threats_list = [t.strip() for t in re.split(r"[,\n]", raw_threats) if t.strip()]
+threats_codes = [re.match(r"^\w", t).group(0) for t in threats_list]
+targeted_threats_str = ",".join(threats_codes)
 
 # --- Update JSON lists if 'Other' is specified ---
 if domain_other:
