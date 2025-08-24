@@ -33,8 +33,9 @@ fault_injections = json.loads(fault_injections_path.read_text())
 # --- Extract fields from issue ---
 domain_selected = extract_field("Domain")
 domain_other = extract_field("If Domain is 'Other', please specify below")
-
-# --- Process Targeted Threats ---
+fault_injection_other = extract_field(
+    "If Fault Injection is 'Other', please specify below new fault Injection types separated by commas (new ID will be automatically generated)"
+)
 raw_threats = extract_field("Targeted Threats")
 threats_list = [t.strip() for t in re.split(r"[,\n]", raw_threats) if t.strip()]
 threats_codes = [re.match(r"^\w", t).group(0) for t in threats_list]
