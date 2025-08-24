@@ -74,9 +74,8 @@ body:
         - I (Information Disclosure)
         - D (Denial of Service)
         - E (Elevation of Privilege)
-        - NA
     validations:
-      required: true
+      required: false
   - type: dropdown
     id: attack_scenarios
     attributes:
