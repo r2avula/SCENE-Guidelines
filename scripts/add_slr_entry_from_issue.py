@@ -11,11 +11,8 @@ if not body:
     with open("issue_body.txt", "r", encoding="utf-8") as f:
         body = f.read()
 
-print("\n--- RAW ISSUE BODY ---")
-print(body)
-print("----------------------\n")
 
-def extract_single(field_label):
+def extract_field(field_label):
     pattern = rf"(?:^|\n)###\s+{re.escape(field_label)}\s*\n\n([^\n]+)"
     match = re.search(pattern, body)
     if match:
@@ -25,26 +22,61 @@ def extract_single(field_label):
         return value
     return ""
 
-def extract_multi(field_label):
-    pattern = rf"(?:^|\n)###\s+{re.escape(field_label)}\s*\n\n((?:- .*\n?)+)"
-    match = re.search(pattern, body)
-    if match:
-        items = [line.strip("- ").strip() for line in match.group(1).splitlines() if line.strip()]
-        return ", ".join(items)
-    return ""
 
 # --- Load config files ---
 domains_path = Path("./config/domains.json")
-attack_scenarios_path = Path("./config/attack_scenarios.json")
+fault_injections_path = Path("./config/fault_injections.json")
 
 domains = json.loads(domains_path.read_text())
-attack_scenarios = json.loads(attack_scenarios_path.read_text())
+fault_injections = json.loads(fault_injections_path.read_text())
 
 # --- Extract fields from issue ---
-domain_selected = extract_single("Domain")
-domain_other = extract_single("If Domain is 'Other', please specify below")
-attack_selected = extract_multi("Attack Scenarios")
-attack_other = extract_single("If Attack Scenarios is 'Other', please specify below")
+domain_selected = extract_field("Domain")
+domain_other = extract_field("If Domain is 'Other', please specify below")
+fault_injection_other = extract_field(
+    "If Fault Injection is 'Other', please specify below new fault Injection types separated by commas (new ID will be automatically generated)"
+)
+raw_threats = extract_field("Targeted Threats")
+threats_list = [t.strip() for t in re.split(r"[,\n]", raw_threats) if t.strip()]
+threats_codes = [re.match(r"^\w", t).group(0) for t in threats_list]
+targeted_threats_str = ", ".join(threats_codes)
+
+# --- Process Fault Injections ---
+raw_fi = extract_field("Fault Injection")
+fi_list = [t.strip() for t in re.split(r"[,\n]", raw_fi) if t.strip()]
+
+# Extract just the Tx codes (like T1, T2, ...) for selected options
+fi_codes = []
+for fi in fi_list:
+    match = re.match(r"^(T\d+)", fi)
+    if match:
+        fi_codes.append(match.group(1))
+
+# Handle 'Other' entries
+if fault_injection_other:
+    # Split by comma if user added multiple new types
+    new_fis = [t.strip() for t in fault_injection_other.split(",") if t.strip()]
+    # Determine the next Tx number
+    existing_numbers = [
+        int(re.match(r"T(\d+)", x).group(1))
+        for x in fault_injections
+        if re.match(r"T\d+", x)
+    ]
+    next_number = max(existing_numbers, default=0) + 1
+
+    for new_fi in new_fis:
+        new_tx = f"T{next_number} ({new_fi})"
+        if new_tx not in fault_injections:
+            fault_injections.insert(-2, new_tx)
+            next_number += 1
+        fi_codes.append(re.match(r"(T\d+)", new_tx).group(1))
+
+    # Save updated JSON
+    fault_injections_path.write_text(json.dumps(fault_injections, indent=2))
+
+# Combine selected Tx codes as comma-separated string
+fault_injections_str = ", ".join(fi_codes)
+
 
 # --- Update JSON lists if 'Other' is specified ---
 if domain_other:
@@ -53,21 +85,16 @@ if domain_other:
         domains_path.write_text(json.dumps(domains, indent=2))
     domain_selected = domain_other
 
-if attack_other:
-    if attack_other not in attack_scenarios:
-        attack_scenarios.insert(-2, attack_other)
-        attack_scenarios_path.write_text(json.dumps(attack_scenarios, indent=2))
-    attack_selected = attack_selected.replace("Other (please specify below)", attack_other)
-
 entry = {
-    "DOI": extract_single("DOI"),
-    "Year": extract_single("Year"),
+    "DOI": extract_field("DOI"),
+    "Year": extract_field("Year"),
     "Domain": domain_selected,
-    "TRL": extract_single("TRL"),
-    "AI-based": extract_single("AI-based"),
-    "Targeted Threats": extract_multi("Targeted Threats"),
-    "Attack Scenarios": attack_selected,
-    "Evaluation Method": extract_multi("Evaluation Method"),
+    "TRL": extract_field("TRL"),
+    "AI": extract_field("AI-based"),
+    "Targeted Threats": targeted_threats_str,
+    "Attack Scenarios": extract_field("Attack Scenarios"),
+    "Fault Injection": fault_injections_str,
+    "Evaluation Method": extract_field("Evaluation Method"),
 }
 
 # --- Debug print ---
@@ -81,20 +108,7 @@ df = pd.read_csv("slr.csv")
 df = pd.concat([df, pd.DataFrame([entry])], ignore_index=True)
 df.to_csv("slr.csv", index=False)
 
-# --- Update README table ---
-table_md = tabulate(df, headers="keys", tablefmt="github")
-start_marker = "<!-- SLR_TABLE_START -->"
-end_marker = "<!-- SLR_TABLE_END -->"
-
-with open("README.md", "r", encoding="utf-8") as f:
-    readme = f.read()
-
-readme = re.sub(
-    f"{start_marker}.*?{end_marker}",
-    f"{start_marker}\n\n{table_md}\n\n{end_marker}",
-    readme,
-    flags=re.S,
-)
-
-with open("README.md", "w", encoding="utf-8") as f:
-    f.write(readme)
+# --- Debug print of updated CSV ---
+print("\n--- UPDATED CSV CONTENT ---")
+print(tabulate(df, headers="keys", tablefmt="pretty", showindex=False))
+print("--------------------------------\n")
