@@ -79,8 +79,11 @@ jobs:
           git push --force origin "$BRANCH"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - name: Set up GitHub CLI
-        uses: cli/cli-action@v2
+      - name: Authenticate GitHub CLI
+        run: |
+          echo "${GITHUB_TOKEN}" | gh auth login --with-token
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Create Pull Request
         run: |
           BRANCH="slr-entry-${ISSUE_NUM}"
