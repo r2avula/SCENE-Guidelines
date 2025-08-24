@@ -29,16 +29,16 @@ def extract_field(field_label):
 
 # --- Load config files ---
 domains_path = Path("./config/domains.json")
-attack_scenarios_path = Path("./config/attack_scenarios.json")
+threats_path = Path("./config/threats.json")
 
 domains = json.loads(domains_path.read_text())
-attack_scenarios = json.loads(attack_scenarios_path.read_text())
+threats = json.loads(threats_path.read_text())
 
 # --- Extract fields from issue ---
 domain_selected = extract_field("Domain")
 domain_other = extract_field("If Domain is 'Other', please specify below")
-attack_selected = extract_field("Attack Scenarios")
-attack_other = extract_field("If Attack Scenarios is 'Other', please specify below")
+threats_selected = extract_field("Targeted Threats")
+threats_other = extract_field("If Targeted Threats is 'Other', please specify below")
 
 # --- Update JSON lists if 'Other' is specified ---
 if domain_other:
@@ -47,12 +47,12 @@ if domain_other:
         domains_path.write_text(json.dumps(domains, indent=2))
     domain_selected = domain_other
 
-if attack_other:
-    if attack_other not in attack_scenarios:
-        attack_scenarios.insert(-2, attack_other)
-        attack_scenarios_path.write_text(json.dumps(attack_scenarios, indent=2))
-    attack_selected = attack_selected.replace(
-        "Other (please specify below)", attack_other
+if threats_other:
+    if threats_other not in threats:
+        threats.insert(-2, threats_other)
+        threats_path.write_text(json.dumps(threats, indent=2))
+    threats_selected = threats_selected.replace(
+        "Other (please specify below)", threats_other
     )
 
 entry = {
@@ -61,8 +61,8 @@ entry = {
     "Domain": domain_selected,
     "TRL": extract_field("TRL"),
     "AI": extract_field("AI-based"),
-    "Targeted Threats": extract_field("Targeted Threats"),
-    "Attack Scenarios": attack_selected,
+    "Targeted Threats": threats_selected,
+    "Attack Scenarios": extract_field("Attack Scenarios"),
     "Evaluation Method": extract_field("Evaluation Method"),
 }
 
