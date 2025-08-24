@@ -16,7 +16,7 @@ print(body)
 print("----------------------\n")
 
 
-def extract_single(field_label):
+def extract_field(field_label):
     pattern = rf"(?:^|\n)###\s+{re.escape(field_label)}\s*\n\n([^\n]+)"
     match = re.search(pattern, body)
     if match:
@@ -24,19 +24,6 @@ def extract_single(field_label):
         if value.lower() == "no response":
             return ""
         return value
-    return ""
-
-
-def extract_multi(field_label):
-    pattern = rf"(?:^|\n)###\s+{re.escape(field_label)}\s*\n\n((?:- .*\n?)+)"
-    match = re.search(pattern, body)
-    if match:
-        items = [
-            line.strip("- ").strip()
-            for line in match.group(1).splitlines()
-            if line.strip()
-        ]
-        return ", ".join(items)
     return ""
 
 
@@ -48,10 +35,10 @@ domains = json.loads(domains_path.read_text())
 attack_scenarios = json.loads(attack_scenarios_path.read_text())
 
 # --- Extract fields from issue ---
-domain_selected = extract_single("Domain")
-domain_other = extract_single("If Domain is 'Other', please specify below")
-attack_selected = extract_single("Attack Scenarios")
-attack_other = extract_single("If Attack Scenarios is 'Other', please specify below")
+domain_selected = extract_field("Domain")
+domain_other = extract_field("If Domain is 'Other', please specify below")
+attack_selected = extract_field("Attack Scenarios")
+attack_other = extract_field("If Attack Scenarios is 'Other', please specify below")
 
 # --- Update JSON lists if 'Other' is specified ---
 if domain_other:
@@ -69,14 +56,14 @@ if attack_other:
     )
 
 entry = {
-    "DOI": extract_single("DOI"),
-    "Year": extract_single("Year"),
+    "DOI": extract_field("DOI"),
+    "Year": extract_field("Year"),
     "Domain": domain_selected,
-    "TRL": extract_single("TRL"),
-    "AI-based": extract_single("AI-based"),
-    "Targeted Threats": extract_single("Targeted Threats"),
+    "TRL": extract_field("TRL"),
+    "AI-based": extract_field("AI-based"),
+    "Targeted Threats": extract_field("Targeted Threats"),
     "Attack Scenarios": attack_selected,
-    "Evaluation Method": extract_single("Evaluation Method"),
+    "Evaluation Method": extract_field("Evaluation Method"),
 }
 
 # --- Debug print ---
@@ -90,20 +77,25 @@ df = pd.read_csv("slr.csv")
 df = pd.concat([df, pd.DataFrame([entry])], ignore_index=True)
 df.to_csv("slr.csv", index=False)
 
-# --- Update README table ---
-table_md = tabulate(df, headers="keys", tablefmt="github")
-start_marker = "<!-- SLR_TABLE_START -->"
-end_marker = "<!-- SLR_TABLE_END -->"
+# --- Debug print of updated CSV ---
+print("\n--- UPDATED CSV CONTENT ---")
+print(tabulate(df, headers="keys", tablefmt="pretty", showindex=False))
+print("--------------------------------\n")
 
-with open("README.md", "r", encoding="utf-8") as f:
-    readme = f.read()
+# # --- Update README table ---
+# table_md = tabulate(df, headers="keys", tablefmt="github")
+# start_marker = "<!-- SLR_TABLE_START -->"
+# end_marker = "<!-- SLR_TABLE_END -->"
 
-readme = re.sub(
-    f"{start_marker}.*?{end_marker}",
-    f"{start_marker}\n\n{table_md}\n\n{end_marker}",
-    readme,
-    flags=re.S,
-)
+# with open("README.md", "r", encoding="utf-8") as f:
+#     readme = f.read()
 
-with open("README.md", "w", encoding="utf-8") as f:
-    f.write(readme)
+# readme = re.sub(
+#     f"{start_marker}.*?{end_marker}",
+#     f"{start_marker}\n\n{table_md}\n\n{end_marker}",
+#     readme,
+#     flags=re.S,
+# )
+
+# with open("README.md", "w", encoding="utf-8") as f:
+#     f.write(readme)
