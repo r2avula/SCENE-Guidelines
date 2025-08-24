@@ -83,3 +83,16 @@ jobs:
           git push --force origin "$BRANCH"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Open Pull Request
+        uses: peter-evans/create-pull-request@v5
+        with:
+          base: ${{ github.event.repository.default_branch }}
+          branch: "slr-entry-${{ env.ISSUE_NUM }}"
+          title: "Add SLR entry from issue #${{ env.ISSUE_NUM }}"
+          body: |
+            Closes #${{ env.ISSUE_NUM }}
+
+            **Issue content:**
+            ${{ env.ISSUE_BODY }}
+          labels: slr-entry
+          draft: false
