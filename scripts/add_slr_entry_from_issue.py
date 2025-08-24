@@ -15,6 +15,7 @@ print("\n--- RAW ISSUE BODY ---")
 print(body)
 print("----------------------\n")
 
+
 def extract_single(field_label):
     pattern = rf"(?:^|\n)###\s+{re.escape(field_label)}\s*\n\n([^\n]+)"
     match = re.search(pattern, body)
@@ -25,13 +26,19 @@ def extract_single(field_label):
         return value
     return ""
 
+
 def extract_multi(field_label):
     pattern = rf"(?:^|\n)###\s+{re.escape(field_label)}\s*\n\n((?:- .*\n?)+)"
     match = re.search(pattern, body)
     if match:
-        items = [line.strip("- ").strip() for line in match.group(1).splitlines() if line.strip()]
+        items = [
+            line.strip("- ").strip()
+            for line in match.group(1).splitlines()
+            if line.strip()
+        ]
         return ", ".join(items)
     return ""
+
 
 # --- Load config files ---
 domains_path = Path("./config/domains.json")
@@ -43,7 +50,7 @@ attack_scenarios = json.loads(attack_scenarios_path.read_text())
 # --- Extract fields from issue ---
 domain_selected = extract_single("Domain")
 domain_other = extract_single("If Domain is 'Other', please specify below")
-attack_selected = extract_multi("Attack Scenarios")
+attack_selected = extract_single("Attack Scenarios")
 attack_other = extract_single("If Attack Scenarios is 'Other', please specify below")
 
 # --- Update JSON lists if 'Other' is specified ---
@@ -57,7 +64,9 @@ if attack_other:
     if attack_other not in attack_scenarios:
         attack_scenarios.insert(-2, attack_other)
         attack_scenarios_path.write_text(json.dumps(attack_scenarios, indent=2))
-    attack_selected = attack_selected.replace("Other (please specify below)", attack_other)
+    attack_selected = attack_selected.replace(
+        "Other (please specify below)", attack_other
+    )
 
 entry = {
     "DOI": extract_single("DOI"),
@@ -65,9 +74,9 @@ entry = {
     "Domain": domain_selected,
     "TRL": extract_single("TRL"),
     "AI-based": extract_single("AI-based"),
-    "Targeted Threats": extract_multi("Targeted Threats"),
+    "Targeted Threats": extract_single("Targeted Threats"),
     "Attack Scenarios": attack_selected,
-    "Evaluation Method": extract_multi("Evaluation Method"),
+    "Evaluation Method": extract_single("Evaluation Method"),
 }
 
 # --- Debug print ---
