@@ -81,7 +81,7 @@ jobs:
           git add slr.csv README.md
           git commit -m "Add SLR entry from issue #${ISSUE_NUM}" || echo "No changes to commit"
 
-          git push origin --delete "$BRANCH" || true
+          # git push origin --delete "$BRANCH" || true
           git push origin "$BRANCH"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
