@@ -1,0 +1,35 @@
+name: Update SLR Issue Form
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - "config/domains.json"
+      - "config/fault_injections.json"
+      - "scripts/generate_issue_form.py"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+
+      - name: Install dependencies
+        run: pip install pyyaml
+
+      - name: Generate Issue Form
+        run: python scripts/generate_issue_form.py
+
+      - name: Commit changes
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add .github/ISSUE_TEMPLATE/add_slr_entry.yml
+          git commit -m "Update issue form from JSON" || echo "No changes"
+          git push
