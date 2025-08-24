@@ -37,6 +37,11 @@ fault_injections_selected = extract_field("Fault Injection")
 fault_injection_other = extract_field(
     "If Fault Injection is 'Other', please specify below"
 )
+raw_threats = extract_field("Targeted Threats")
+targeted_threats_list = [
+    t.strip() for t in re.split(r"[,\n]", raw_threats) if t.strip()
+]
+targeted_threats_str = ",".join(targeted_threats_list)
 
 # --- Update JSON lists if 'Other' is specified ---
 if domain_other:
@@ -57,7 +62,7 @@ entry = {
     "Domain": domain_selected,
     "TRL": extract_field("TRL"),
     "AI": extract_field("AI-based"),
-    "Targeted Threats": extract_field("Targeted Threats").split(", "),
+    "Targeted Threats": targeted_threats_str,
     "Attack Scenarios": extract_field("Attack Scenarios"),
     "Fault Injection": fault_injections_selected,
     "Evaluation Method": extract_field("Evaluation Method"),
