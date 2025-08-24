@@ -79,14 +79,3 @@ jobs:
           git push --force origin "$BRANCH"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - name: Create Pull Request
-        run: |
-          BRANCH="slr-entry-${ISSUE_NUM}"
-          gh pr create \
-            --head "$BRANCH" \
-            --base main \
-            --title "Add SLR entry from issue #${ISSUE_NUM}" \
-            --body "This PR adds the SLR entry from issue #${ISSUE_NUM}.
-          Closes #${ISSUE_NUM}"
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
