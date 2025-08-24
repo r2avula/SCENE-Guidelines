@@ -33,14 +33,49 @@ fault_injections = json.loads(fault_injections_path.read_text())
 # --- Extract fields from issue ---
 domain_selected = extract_field("Domain")
 domain_other = extract_field("If Domain is 'Other', please specify below")
-fault_injections_selected = extract_field("Fault Injection")
-fault_injection_other = extract_field(
-    "If Fault Injection is 'Other', please specify below"
-)
+
+# --- Process Targeted Threats ---
 raw_threats = extract_field("Targeted Threats")
 threats_list = [t.strip() for t in re.split(r"[,\n]", raw_threats) if t.strip()]
 threats_codes = [re.match(r"^\w", t).group(0) for t in threats_list]
-targeted_threats_str = ",".join(threats_codes)
+targeted_threats_str = ", ".join(threats_codes)
+
+# --- Process Fault Injections ---
+raw_fi = extract_field("Fault Injection")
+fi_list = [t.strip() for t in re.split(r"[,\n]", raw_fi) if t.strip()]
+
+# Extract just the Tx codes (like T1, T2, ...) for selected options
+fi_codes = []
+for fi in fi_list:
+    match = re.match(r"^(T\d+)", fi)
+    if match:
+        fi_codes.append(match.group(1))
+
+# Handle 'Other' entries
+if fault_injection_other:
+    # Split by comma if user added multiple new types
+    new_fis = [t.strip() for t in fault_injection_other.split(",") if t.strip()]
+    # Determine the next Tx number
+    existing_numbers = [
+        int(re.match(r"T(\d+)", x).group(1))
+        for x in fault_injections
+        if re.match(r"T\d+", x)
+    ]
+    next_number = max(existing_numbers, default=0) + 1
+
+    for new_fi in new_fis:
+        new_tx = f"T{next_number} ({new_fi})"
+        if new_tx not in fault_injections:
+            fault_injections.insert(-2, new_tx)
+            next_number += 1
+        fi_codes.append(re.match(r"(T\d+)", new_tx).group(1))
+
+    # Save updated JSON
+    fault_injections_path.write_text(json.dumps(fault_injections, indent=2))
+
+# Combine selected Tx codes as comma-separated string
+fault_injections_str = ", ".join(fi_codes)
+
 
 # --- Update JSON lists if 'Other' is specified ---
 if domain_other:
@@ -48,12 +83,6 @@ if domain_other:
         domains.insert(-2, domain_other)
         domains_path.write_text(json.dumps(domains, indent=2))
     domain_selected = domain_other
-
-if fault_injection_other:
-    if fault_injection_other not in fault_injections:
-        fault_injections.insert(-2, fault_injection_other)
-        fault_injections_path.write_text(json.dumps(fault_injections, indent=2))
-    fault_injections_selected = fault_injection_other
 
 entry = {
     "DOI": extract_field("DOI"),
@@ -63,7 +92,7 @@ entry = {
     "AI": extract_field("AI-based"),
     "Targeted Threats": targeted_threats_str,
     "Attack Scenarios": extract_field("Attack Scenarios"),
-    "Fault Injection": fault_injections_selected,
+    "Fault Injection": fault_injections_str,
     "Evaluation Method": extract_field("Evaluation Method"),
 }
 
