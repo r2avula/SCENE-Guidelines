@@ -60,7 +60,7 @@ entry = {
     "Year": extract_field("Year"),
     "Domain": domain_selected,
     "TRL": extract_field("TRL"),
-    "AI-based": extract_field("AI-based"),
+    "AI": extract_field("AI-based"),
     "Targeted Threats": extract_field("Targeted Threats"),
     "Attack Scenarios": attack_selected,
     "Evaluation Method": extract_field("Evaluation Method"),
@@ -81,21 +81,3 @@ df.to_csv("slr.csv", index=False)
 print("\n--- UPDATED CSV CONTENT ---")
 print(tabulate(df, headers="keys", tablefmt="pretty", showindex=False))
 print("--------------------------------\n")
-
-# # --- Update README table ---
-# table_md = tabulate(df, headers="keys", tablefmt="github")
-# start_marker = "<!-- SLR_TABLE_START -->"
-# end_marker = "<!-- SLR_TABLE_END -->"
-
-# with open("README.md", "r", encoding="utf-8") as f:
-#     readme = f.read()
-
-# readme = re.sub(
-#     f"{start_marker}.*?{end_marker}",
-#     f"{start_marker}\n\n{table_md}\n\n{end_marker}",
-#     readme,
-#     flags=re.S,
-# )
-
-# with open("README.md", "w", encoding="utf-8") as f:
-#     f.write(readme)
