@@ -11,10 +11,6 @@ if not body:
     with open("issue_body.txt", "r", encoding="utf-8") as f:
         body = f.read()
 
-print("\n--- RAW ISSUE BODY ---")
-print(body)
-print("----------------------\n")
-
 
 def extract_field(field_label):
     pattern = rf"(?:^|\n)###\s+{re.escape(field_label)}\s*\n\n([^\n]+)"
@@ -29,16 +25,18 @@ def extract_field(field_label):
 
 # --- Load config files ---
 domains_path = Path("./config/domains.json")
-threats_path = Path("./config/threats.json")
+fault_injections_path = Path("./config/fault_injections.json")
 
 domains = json.loads(domains_path.read_text())
-threats = json.loads(threats_path.read_text())
+fault_injections = json.loads(fault_injections_path.read_text())
 
 # --- Extract fields from issue ---
 domain_selected = extract_field("Domain")
 domain_other = extract_field("If Domain is 'Other', please specify below")
-threats_selected = extract_field("Targeted Threats")
-threats_other = extract_field("If Targeted Threats is 'Other', please specify below")
+fault_injections_selected = extract_field("Fault Injection")
+fault_injection_other = extract_field(
+    "If Fault Injection is 'Other', please specify below"
+)
 
 # --- Update JSON lists if 'Other' is specified ---
 if domain_other:
@@ -47,13 +45,11 @@ if domain_other:
         domains_path.write_text(json.dumps(domains, indent=2))
     domain_selected = domain_other
 
-if threats_other:
-    if threats_other not in threats:
-        threats.insert(-2, threats_other)
-        threats_path.write_text(json.dumps(threats, indent=2))
-    threats_selected = threats_selected.replace(
-        "Other (please specify below)", threats_other
-    )
+if fault_injection_other:
+    if fault_injection_other not in fault_injections:
+        fault_injections.insert(-2, fault_injection_other)
+        fault_injections_path.write_text(json.dumps(fault_injections, indent=2))
+    fault_injections_selected = fault_injection_other
 
 entry = {
     "DOI": extract_field("DOI"),
@@ -61,8 +57,9 @@ entry = {
     "Domain": domain_selected,
     "TRL": extract_field("TRL"),
     "AI": extract_field("AI-based"),
-    "Targeted Threats": threats_selected,
+    "Targeted Threats": extract_field("Targeted Threats").split(", "),
     "Attack Scenarios": extract_field("Attack Scenarios"),
+    "Fault Injection": fault_injections_selected,
     "Evaluation Method": extract_field("Evaluation Method"),
 }
 
