@@ -1,4 +1,4 @@
-DOI,Year,Domain,TRL,AI,Targeted Threats,Attack Scenarios,Fault Injection,Evaluation Method
+DOI,Year,Domain,TRL,AI,Targeted Threats,Attack Scenarios,Fault Injection,Evaluation Method, Identified Security Challenges, Contributions, Use Case Description, Prerequisites, SCE Approach Description, Required Resources, Evaluation Approach Description, Evaluation Metrics, Evaluation Results, Lessons Learned, Additional Information
 10.1109/ACCESS.2020.3007338,2020,Cloud,4-6,No,"S, T, R, I, D, E",Yes,"T1, T2",Empirical
 10.1145/3600160.3605076,2023,Cloud,4-6,Yes,"S, T, R, I, D, E",Yes,"T2, T3",Empirical
 10.1109/Redundancy59964.2023.10330188,2023,General Purpose,4-6,No,"S, T, R, I, D, E",Yes,,Empirical
