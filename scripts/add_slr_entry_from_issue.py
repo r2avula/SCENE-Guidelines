@@ -96,6 +96,18 @@ entry = {
     "Attack Scenarios": extract_field("Attack Scenarios"),
     "Fault Injection": fault_injections_str,
     "Evaluation Method": extract_field("Evaluation Method"),
+    # --- optional free-text fields ---
+    "Identified Security Challenges": extract_field("Identified Security Challenges"),
+    "Contributions": extract_field("Contributions"),
+    "Use Case Description": extract_field("Use Case Description"),
+    "Prerequisites": extract_field("Prerequisites"),
+    "SCE Approach Description": extract_field("SCE Approach Description"),
+    "Required Resources": extract_field("Required Resources"),
+    "Evaluation Approach Description": extract_field("Evaluation Approach Description"),
+    "Evaluation Metrics": extract_field("Evaluation Metrics"),
+    "Evaluation Results": extract_field("Evaluation Results"),
+    "Lessons Learned": extract_field("Lessons Learned"),
+    "Additional Information": extract_field("Additional Information"),
 }
 
 # --- Debug print ---
@@ -224,6 +236,73 @@ if domain_other or fault_injection_other:
                     "options": ["Empirical", "Analytical", "NA"],
                 },
                 "validations": {"required": True},
+            },
+            # --- optional free text fields ---
+            {
+                "type": "textarea",
+                "id": "security_challenges",
+                "attributes": {"label": "Identified Security Challenges"},
+                "validations": {"required": False},
+            },
+            {
+                "type": "textarea",
+                "id": "contributions",
+                "attributes": {"label": "Contributions"},
+                "validations": {"required": False},
+            },
+            {
+                "type": "textarea",
+                "id": "use_case_description",
+                "attributes": {"label": "Use Case Description"},
+                "validations": {"required": False},
+            },
+            {
+                "type": "textarea",
+                "id": "prerequisites",
+                "attributes": {"label": "Prerequisites"},
+                "validations": {"required": False},
+            },
+            {
+                "type": "textarea",
+                "id": "sce_approach",
+                "attributes": {"label": "SCE Approach Description"},
+                "validations": {"required": False},
+            },
+            {
+                "type": "textarea",
+                "id": "required_resources",
+                "attributes": {"label": "Required Resources"},
+                "validations": {"required": False},
+            },
+            {
+                "type": "textarea",
+                "id": "evaluation_approach_description",
+                "attributes": {"label": "Evaluation Approach Description"},
+                "validations": {"required": False},
+            },
+            {
+                "type": "textarea",
+                "id": "evaluation_metrics",
+                "attributes": {"label": "Evaluation Metrics"},
+                "validations": {"required": False},
+            },
+            {
+                "type": "textarea",
+                "id": "evaluation_results",
+                "attributes": {"label": "Evaluation Results"},
+                "validations": {"required": False},
+            },
+            {
+                "type": "textarea",
+                "id": "lessons_learned",
+                "attributes": {"label": "Lessons Learned"},
+                "validations": {"required": False},
+            },
+            {
+                "type": "textarea",
+                "id": "additional_info",
+                "attributes": {"label": "Additional Information"},
+                "validations": {"required": False},
             },
         ],
     }
