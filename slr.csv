@@ -18,3 +18,4 @@ DOI,Year,Domain,TRL,AI,Targeted Threats,Attack Scenarios,Fault Injection,Evaluat
 10.1007/978-3-031-63783-4_18,2024,Internet of Things,1-3,No,"S, T, R, I, D",No,T5,Empirical,,,,,,,,,,,
 NA,2019,Cloud,NA,No,NA,No,NA,NA,,,,,,,,,,,
 NA,2023,Cloud,4-6,No,"S, T, R, I, D",No,"T1, T4, T5",Empirical,,,,,,,,,,,
+te,2026,General Purpose,1-3,Yes,S,Yes,T1,Empirical,,,,,,,,,,,
