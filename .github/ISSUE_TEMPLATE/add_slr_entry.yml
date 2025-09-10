@@ -16,13 +16,14 @@ body:
     attributes:
       label: Year
       placeholder: YYYY
-      description: Enter the 4-digit publication year (e.g., 2023)
+      description: Enter the 4-digit publication year (e.g., 2025)
     validations:
       required: true
   - type: dropdown
     id: domain
     attributes:
       label: Domain
+      multiple: true
       options:
         - Cloud
         - General Purpose
@@ -74,8 +75,9 @@ body:
         - I (Information Disclosure)
         - D (Denial of Service)
         - E (Elevation of Privilege)
+        - NA
     validations:
-      required: false
+      required: true
   - type: dropdown
     id: attack_scenarios
     attributes:
@@ -102,9 +104,11 @@ body:
     validations:
       required: true
   - type: input
-    id: fault_injections_other_specify
+    id: fault_injection_other_specify
     attributes:
-      label: If Fault Injection is 'Other', please specify below new fault Injection types separated by commas (new ID will be automatically generated)
+      label:
+        If Fault Injection is 'Other', please specify below new fault Injection
+        types separated by commas (new ID will be automatically generated)
       description: Leave blank if not applicable
     validations:
       required: false
@@ -119,3 +123,75 @@ body:
         - NA
     validations:
       required: true
+  - type: markdown
+    attributes:
+      value: |
+        ---
+        ## 📝 Optional Information
+        *(Fill in if applicable, otherwise leave blank)*
+  - type: input
+    id: security_challenges
+    attributes:
+      label: Identified Security Challenges
+    validations:
+      required: false
+  - type: input
+    id: contributions
+    attributes:
+      label: Contributions
+    validations:
+      required: false
+  - type: input
+    id: use_case_description
+    attributes:
+      label: Use Case Description
+    validations:
+      required: false
+  - type: input
+    id: prerequisites
+    attributes:
+      label: Prerequisites
+    validations:
+      required: false
+  - type: input
+    id: sce_approach
+    attributes:
+      label: SCE Approach Description
+    validations:
+      required: false
+  - type: input
+    id: required_resources
+    attributes:
+      label: Required Resources
+    validations:
+      required: false
+  - type: input
+    id: evaluation_approach_description
+    attributes:
+      label: Evaluation Approach Description
+    validations:
+      required: false
+  - type: input
+    id: evaluation_metrics
+    attributes:
+      label: Evaluation Metrics
+    validations:
+      required: false
+  - type: input
+    id: evaluation_results
+    attributes:
+      label: Evaluation Results
+    validations:
+      required: false
+  - type: input
+    id: lessons_learned
+    attributes:
+      label: Lessons Learned
+    validations:
+      required: false
+  - type: input
+    id: additional_info
+    attributes:
+      label: Additional Information
+    validations:
+      required: false
