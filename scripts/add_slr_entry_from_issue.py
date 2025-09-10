@@ -127,9 +127,19 @@ if domain_other:
         domains_path.write_text(json.dumps(domains, indent=2))
     domain_selected = domain_other
 
+# Extract year and enforce integer
+year_str = extract_field("Year").strip()
+if not year_str:
+    raise ValueError("Year field is required but missing.")
+
+try:
+    year_val = int(year_str)
+except ValueError:
+    raise ValueError(f"Invalid Year value: {year_str}. Must be an integer.")
+
 entry = {
     "DOI": extract_field("DOI"),
-    "Year": extract_field("Year"),
+    "Year": year_val,
     "Domain": domain_selected,
     "TRL": extract_field("TRL"),
     "AI": extract_field("AI-based"),
