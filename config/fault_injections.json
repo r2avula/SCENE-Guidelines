@@ -4,5 +4,6 @@
   "T3 (Credentials misuse)",
   "T4 (Various Denial of Service (DoS) injections)",
   "T5 (Data and resource injections)",
-  "T6 (Environment-related)"
+  "T6 (Environment-related)",
+  "T7 (new FI)"
 ]
